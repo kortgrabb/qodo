@@ -178,8 +178,19 @@ async function exportTodos(create_new: boolean = false, id?: any) {
   }
 }
 
-async function importTodos() {
-  let entryId = prompt("Enter entry id: ");
+async function importTodos(id: any, loadFromId: boolean = false) {
+
+  if (loadFromId) {
+    let entry: any = await pb.collection("todo_lists").getOne(id);
+    if (entry) {
+      todoList = entry.todos;
+      renderTodos();
+    }
+
+    return;
+  }
+
+  let entryId: any = prompt("Enter entry id: ");
   if (entryId) {
     let entry: any = await pb.collection("todo_lists").getOne(entryId);
     if (entry) {
@@ -187,26 +198,26 @@ async function importTodos() {
       renderTodos();
     }
   }
+  
+  // store entry id in local storage
+  localStorage.setItem("entryId", entryId);
 }
 
 let exportBtn = document.querySelector(".export-btn");
-exportBtn?.addEventListener("click", () => {
-  let answer = prompt("Enter id (leave blank to create):");
-  if (answer) {
-    exportTodos(false, answer);
-  } else {
-    exportTodos(true);
-  }
-});
 
 if (exportBtn) {
-  let answer = prompt("Create new entry?");
-  if (answer === "yes") {
+  if (localStorage.getItem("entryId")) {
+    exportBtn.addEventListener("click", () => exportTodos(false, localStorage.getItem("entryId")));
+  } else {
     exportBtn.addEventListener("click", () => exportTodos(true));
   }
 }
 
 let importBtn = document.querySelector(".import-btn");
 if (importBtn) {
-  importBtn.addEventListener("click", importTodos);
+  if (localStorage.getItem("entryId")) {
+    importBtn.addEventListener("click", () => importTodos(localStorage.getItem("entryId"), true));
+  } else {
+    importBtn.addEventListener("click", () => importTodos(null));
+  }
 }
