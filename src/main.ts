@@ -1,4 +1,4 @@
-import { clipboard, invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api";
 import PocketBase from "pocketbase";
 
 const pb = new PocketBase("https://qodo.pockethost.io/");
