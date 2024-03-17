@@ -1,7 +1,7 @@
-import { invoke } from "@tauri-apps/api";
+import { clipboard, invoke } from "@tauri-apps/api";
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+const pb = new PocketBase("https://qodo.pockethost.io/");
 
 interface Todo {
   text: string;
@@ -160,41 +160,44 @@ function getTodoList() {
   });
 }
 
-async function exportTodos() {
+async function exportTodos(create_new: boolean = false, id?: any) {
   // create a new entry in the database and give the user the key
-  let entry: any = pb.collection("todo_lists").create({
-    todos: JSON.stringify(todoList),
-  });
+  if (create_new) {
+    let entry: any = await pb.collection("todo_lists").create({
+      todos: JSON.stringify(todoList),
+    });
 
-  // get the id of the new entry
-  let export_key = (await entry).id;
+    console.log(entry.id);
+  } else {
+    // update the entry in the database
+    let entry: any = await pb.collection("todo_lists").update(id, {
+      todos: JSON.stringify(todoList),
+    })
 
-  alert(`Exported todos with key: ${export_key}`);
-  navigator.clipboard.writeText(export_key);
+    console.log(entry.id);
+  }
 }
 
-function importTodos() {
-  // dialog to ask for key
-  const key = prompt("Enter key to import");
-
-  if (key) {
-    // get the entry from the database
-    pb.collection("todo_lists").getOne(key).then((result: any) => {
-      if (result) {
-        todoList = result.todos;
-        renderTodos();
-        onTodoChange();
-      } else {
-        alert("Key not found");
-      }
-    });
+async function importTodos() {
+  let entryId = prompt("Enter entry id: ");
+  if (entryId) {
+    let entry: any = await pb.collection("todo_lists").getOne(entryId);
+    if (entry) {
+      todoList = JSON.parse(entry.todos);
+      renderTodos();
+    }
   }
 }
 
 getTodoList();
 let exportBtn = document.querySelector(".export-btn");
 if (exportBtn) {
-  exportBtn.addEventListener("click", exportTodos);
+  let entryId = prompt("Enter entry id (leave blank to create a new entry): ");
+  if (entryId == "") {
+    exportBtn.addEventListener("click", () => exportTodos(true));
+  } else {
+    exportBtn.addEventListener("click", () => exportTodos(false, entryId));
+  }
 }
 
 let importBtn = document.querySelector(".import-btn");
