@@ -167,7 +167,7 @@ async function exportTodos(create_new: boolean = false, id?: any) {
       todos: JSON.stringify(todoList),
     });
 
-    console.log(entry.id);
+    alert("Key: " + entry.id);
   } else {
     // update the entry in the database
     let entry: any = await pb.collection("todo_lists").update(id, {
