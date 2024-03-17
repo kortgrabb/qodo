@@ -18,7 +18,7 @@ struct Todo {
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn send_todo_list(todo_list: String) {
-    let todo_list: Vec<Todo> = serde_json::from_str(&todo_list).unwrap(); 
+    let todo_list: Vec<Todo> = serde_json::from_str(&todo_list).unwrap_or(vec![]);
     // save into a file
     const TODO_PATH: &str = "./todo_list.json";
     let todo_list = TodoList { todos: todo_list };
