@@ -167,7 +167,7 @@ async function exportTodos(create_new: boolean = false, id?: any) {
       todos: JSON.stringify(todoList),
     });
 
-    alert("Key: " + entry.id);
+    console.log(entry.id);
   } else {
     // update the entry in the database
     let entry: any = await pb.collection("todo_lists").update(id, {
@@ -183,20 +183,26 @@ async function importTodos() {
   if (entryId) {
     let entry: any = await pb.collection("todo_lists").getOne(entryId);
     if (entry) {
-      todoList = JSON.parse(entry.todos);
+      todoList = entry.todos;
       renderTodos();
     }
   }
 }
 
-getTodoList();
 let exportBtn = document.querySelector(".export-btn");
-if (exportBtn) {
-  let entryId = prompt("Enter entry id (leave blank to create a new entry): ");
-  if (entryId == "") {
-    exportBtn.addEventListener("click", () => exportTodos(true));
+exportBtn?.addEventListener("click", () => {
+  let answer = prompt("Enter id (leave blank to create):");
+  if (answer) {
+    exportTodos(false, answer);
   } else {
-    exportBtn.addEventListener("click", () => exportTodos(false, entryId));
+    exportTodos(true);
+  }
+});
+
+if (exportBtn) {
+  let answer = prompt("Create new entry?");
+  if (answer === "yes") {
+    exportBtn.addEventListener("click", () => exportTodos(true));
   }
 }
 
