@@ -147,18 +147,18 @@ function sendTodoList() {
   invoke("send_todo_list", { todoList: JSON.stringify(todoList) });
 }
 
-function getTodoList() {
-  invoke("get_todo_list").then((result: any) => {
-    todoList = JSON.parse(result).todos;
+// function getTodoList() {
+//   invoke("get_todo_list").then((result: any) => {
+//     todoList = JSON.parse(result).todos;
 
-    if (todoList) {
-      renderTodos();
-    } else {
-      todoList = [];
-      renderTodos();
-    }
-  });
-}
+//     if (todoList) {
+//       renderTodos();
+//     } else {
+//       todoList = [];
+//       renderTodos();
+//     }
+//   });
+// }
 
 async function exportTodos(create_new: boolean = false, id?: any) {
   // create a new entry in the database and give the user the key
