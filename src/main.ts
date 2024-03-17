@@ -23,6 +23,12 @@ function createTodoElement(todo: Todo): HTMLDivElement {
   checkbox.checked = todo.completed;
   checkbox.addEventListener('change', () => {
     todo.completed = checkbox.checked;
+
+    if (todo.completed) {
+      textContainer.classList.add('todo-completed');
+    } else {
+      textContainer.classList.remove('todo-completed');
+    }
     onTodoChange();
   })
 
@@ -70,6 +76,9 @@ function renderTodos() {
     todoList.forEach((todo) => {
       const todoElement = createTodoElement(todo);
       todoListElement.appendChild(todoElement);
+      if (todo.completed) {
+        todoElement.classList.add('todo-completed');
+      }
     });
   }
 }
@@ -138,8 +147,13 @@ function sendTodoList() {
 function getTodoList() {
   invoke('get_todo_list').then((result: any) => {
     todoList = JSON.parse(result).todos;
-    console.log(todoList);
-    renderTodos();
+    
+    if (todoList) {
+      renderTodos();
+    } else {
+      todoList = [];
+      renderTodos();
+    }
   });
 }
 
